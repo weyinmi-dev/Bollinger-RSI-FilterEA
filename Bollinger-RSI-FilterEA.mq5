@@ -9,7 +9,7 @@
 
 #include <Trade\Trade.mqh>
   CTrade trade;
-  CPosition posinfo;
+  CPositionInfo posinfo;
   COrderInfo ordinfo;
 
 #include <Indicators\Trend.mqh>
@@ -19,7 +19,7 @@
   CiMA MovAvgFast, MovAvgSlow;
 
 
-#include <Indicators\Oscillators.mqh>
+#include <Indicators\Oscilators.mqh>
   CiRSI   RSI;
 
   enum LotTyp   {Lot_per_1k_Capital = 0, Fixed_Lot_Size = 1};
@@ -56,8 +56,8 @@ input group "=== Moving Averagr Filter ==="
   input ENUM_TIMEFRAMES       MATimeframe                 = PERIOD_D1;   // Timeframe for Moving Average Filter
   input int                   Slow_MA_Period              = 200;         // Slow Moving Average Period
   input int                   Fast_MA_Period              = 50;          // Fast Moving Average Period
-  input ENUM_MA_METHOD        MA_Mode                     = MODE_EMA     // Moving Average Mode/Method
-  input ENUM_APPLIED_PRICE    MA_AppPrice                 = PRICE_MEDIAN // Moving Average Applied Price
+  input ENUM_MA_METHOD        MA_Mode                     = MODE_EMA;     // Moving Average Mode/Method
+  input ENUM_APPLIED_PRICE    MA_AppPrice                 = PRICE_MEDIAN; // Moving Average Applied Price
 
 input group "=== Ichimoku Filter ==="
   input bool                  IchiFilterOn                = false;        // Buy only above cloud and sell only below cloud (vice versa)
@@ -141,7 +141,7 @@ void RunSymbols(string symbol)
       SenA = Ichimoku.SenkouSpanA(1);
       SenB = Ichimoku.SenkouSpanB(1);
       Ten = Ichimoku.TenkanSen(0);
-      Kij = Ichimoku.kijunSen(0);
+      Kij = Ichimoku.KijunSen(0);
     }
 
 
@@ -169,7 +169,7 @@ void RunSymbols(string symbol)
       // BarsLastTraded = iBars(symbol,Timeframe);  // for single currency     
     }
 
-    if (Closex1 > Bollinger.Upper(1) && BarsNow > BarsLastTraded + BarsSince && RSI.Main(0) > 80)
+    if (Closex1 > Bollinger.Upper(1) && Barsnow > BarsLastTraded + BarsSince && RSI.Main(0) > 80)
     {
       double tp = Bollinger.Lower(0);
       trade.Sell(lots,symbol,0,0,tp,NULL);
@@ -223,7 +223,7 @@ void SetBarsTraded(string symbol)
     string targetSymbol = BarsTraded[i][0];
     int BarsNow = iBars(symbol, Timeframe);
 
-    if (targetsymbol==symbol)
+    if (targetSymbol==symbol)
     {
       BarsTraded[i][1] = IntegerToString(BarsNow);
     }
