@@ -163,6 +163,9 @@ void RunSymbols(string symbol)
 
     if (Closex1 < Bollinger.Lower(1) && Barsnow > BarsLastTraded + BarsSince && RSI.Main(1) < 20)
     {
+      if(MAFilterOn && PricevsMovAvg(FastMA, SlowMA) != "above") return;
+      if(IchiFilterOn && PricevsIchiCloud(symbol, SenA, SenB, Ten, Kij) != "above") return;
+    
       double tp = Bollinger.Upper(0);
       trade.Buy(lots,symbol,0,0,tp,NULL);
       SetBarsTraded(symbol);
@@ -171,6 +174,9 @@ void RunSymbols(string symbol)
 
     if (Closex1 > Bollinger.Upper(1) && Barsnow > BarsLastTraded + BarsSince && RSI.Main(0) > 80)
     {
+      if(MAFilterOn && PricevsMovAvg(FastMA, SlowMA) != "below") return;
+      if(IchiFilterOn && PricevsIchiCloud(symbol, SenA, SenB, Ten, Kij) != "below") return;
+    
       double tp = Bollinger.Lower(0);
       trade.Sell(lots,symbol,0,0,tp,NULL);
       SetBarsTraded(symbol);
@@ -242,4 +248,73 @@ int GetBarsLastTraded(string symbol)
     }
   }
   return BarsLastTraded;
+}
+
+string PricevsMovAvg(double MAfast, double MAslow)
+{
+   if(MAfast > MAslow) return "above";
+   if(MAfast < MAslow) return "below";
+   
+   return "error";
+}
+
+string PricevsIchiCloud(string symbol, double SenA, double SenB, double Ten, double Kij)
+{
+   double ask = SymbolInfoDouble(symbol, SYMBOL_ASK);
+   
+   if (IchiFilterType ==0)
+   {
+      if(ask > SenA && ask > SenB) return "above";
+      if(ask < SenA && ask < SenB) return "below";
+   }
+   
+   if (IchiFilterType == 1)
+   {
+      if(ask > Ten) return "above";
+      if(ask < Ten) return "below";
+   }
+   
+   if(IchiFilterType == 2)
+   {
+      if(ask > Kij) return "above";
+      if(ask < Kij) return "below";
+   }
+   
+   if (IchiFilterType == 3)
+   {
+      if(ask > SenA) return "above";
+      if(ask < SenA) return "below";
+   }
+   
+   if (IchiFilterType == 4)
+   {
+      if(ask > SenB) return "above";
+      if(ask < SenB) return "below";
+   }
+
+   if(IchiFilterType == 5) 
+   {
+      if(Ten>Kij) return "above";
+      if(Ten<Kij) return "below";
+   }
+   
+   if(IchiFilterType == 6)
+   {
+      if(Ten>Kij && Kij>SenA && Kij>SenB) return "above";
+      if(Ten<Kij && Kij<SenA && Kij<SenB) return "below";
+   }
+   
+   if(IchiFilterType == 7)
+   {
+      if(Ten>SenA && Ten>SenB) return "above";
+      if(Ten<SenA && Ten<SenB) return "below";
+   }
+   
+   if(IchiFilterType == 8)
+   {   
+      if(Kij>SenA && Kij>SenB) return "above";  
+      if(Kij<SenA && Kij<SenB) return "below";
+   }
+   
+   return "InCloud";
 }
